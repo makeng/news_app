@@ -1,0 +1,100 @@
+.card{
+    padding: 0 1rem;
+    border-radius: 1rem;
+    position: relative;
+    box-sizing: content-box;
+    margin: .5rem 1rem;
+}
+/*card bg*/
+.card:nth-child(1){
+    background: rgba(0,0,0,.6);
+}
+.card:nth-child(2){
+    background: #000;
+}
+.card:nth-child(n+3){
+    background: rgba(0,0,0,.6);
+}
+.card li{
+    overflow: hidden;
+    margin: .2rem 0;
+    color: #fff;
+    height: 2rem;
+}
+.card li em{
+    display: block;
+    float: left;
+    height: 2rem;
+    line-height: 2rem;
+}
+#weather-play{
+    width: 30%;
+    position: absolute;
+    right: 1rem;
+    top: 0;
+    height: 100%;
+}
+#weather-play i{
+    float: none;
+    font-size: 5rem;
+    width: 100%;
+}
+#weather-play em{
+    display: block;
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    bottom: .5rem;
+}
+.card li i {
+    box-sizing: border-box;
+    font-size: 1.5rem;
+    height: 1.8rem;
+    display: block;
+    float: left;
+    width: 1.8rem;
+    text-align: center;
+    border-radius: 50%;
+    line-height: 1.8rem;
+    margin: .2rem .2rem 0;
+}
+.card li:nth-child(1) i{
+    position: relative;
+    background: darkseagreen;
+}
+.card li:nth-child(1) i b{
+    display: block;
+    width: .4rem;
+    height: .4rem;
+    top: 50%;
+    left: 50%;
+    margin: -.2rem 0 0 -.2rem;
+    position: absolute;
+    border-radius: 50%;
+    background: inherit;
+    animation: daySw 2s infinite;
+}
+@keyframes daySw {
+    0%{ transform: scale(1) }
+    100%{ transform: scale(1.5) }
+}
+.card li:nth-child(2) i{
+    background: deepskyblue;
+    animation: goRound 10s linear infinite;
+}
+@keyframes goRound {
+    0%{ transform: rotate(0deg) }
+    100%{ transform: rotate(360deg) }
+}
+.card li:nth-child(3) i{
+    background: red;
+    animation: colorSw 5s infinite;
+}
+@keyframes colorSw {
+    0%{ background: orange }
+    50%{ background: red }
+    100%{ background: orange }
+}
+.card li:nth-child(4) i{
+
+}

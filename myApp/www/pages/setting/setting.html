@@ -1,0 +1,43 @@
+<ion-view view-title="设置">
+    <ion-content class="has-header">
+        <div class="list">
+            <!--各个选项-->
+            <div class="item settingItem">
+                <i class="icon ion-ios-location"></i>
+                选择城市
+                <b class="sel">
+                    {{city}}市&nbsp;&nbsp;&nbsp;<i class="ion-arrow-down-b" on-touch="selCity()"></i>
+                </b>
+            </div>
+            <div class="item settingItem">
+                <i class="icon ion-android-list"></i>
+                定制新闻栏目顺序
+                <ul>
+                    <li ng-repeat="item in NewsCh track by $index">
+                        {{item.name}}
+                        <!--删除按钮-->
+                        <div class="checkBtn" on-touch="NewsChDel($index)">-</div>
+                    </li>
+                    <li on-touch="newBar()">
+                        新增...
+                        <!--增加按钮-->
+                        <div class="checkBtn" on-touch="NewsChAdd()">+</div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </ion-content>
+    <!--选项内容列表-->
+    <ion-scroll class="selList-scroll" ng-show="showSelList" delegate-handle="small" ng-class="{animate_height0:aniSelList}">
+        <div class="list selList">
+            <div class="item selList-item" ng-repeat="item in list">
+                {{item}}
+                <i class="selList-item-i">
+                    <input type="radio" on-touch="selItem($index)" name="sel"/>
+                </i>
+            </div>
+        </div>
+    </ion-scroll>
+    <!--深色屏障-->
+    <div class="blackScreen" ng-show="showSelList" on-touch="closeSelList()"></div>
+</ion-view>

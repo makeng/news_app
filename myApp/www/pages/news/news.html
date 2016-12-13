@@ -1,0 +1,41 @@
+<!------------------------------------ html -------------------------------------------->
+<ion-view view-title="{{channel.name}}">
+    <ul class="newsChoose has-header row">
+        <!--栏目列表-->
+        <li ng-repeat="txt in newsChannelArrFront4 track by $index" on-touch="selTab($index)"
+            ng-class="{newsChooseSel:selected[$index]}">
+            {{txt.name}}
+        </li>
+        <!--更多：下拉的栏目-->
+        <li on-touch="showMoreNewsTitle()" ng-class="{hideUl:hideMoreNews}" ng-show="isMoreCh">
+            更多...
+            <ul class="newsChoose-sub">
+                <li ng-repeat="txt in newsChannelArrAfter4" ng-class="{newsChooseSel:selected[$index + 4]}"
+                    on-touch="selTab($index+4)">
+                    {{txt.name}}
+                </li>
+            </ul>
+        </li>
+    </ul>
+    <!--新闻列表-->
+    <ion-content class="has-header-my">
+        <!--下拉刷新-->
+        <ion-refresher pulling-text="刷新中" on-refresh="newsRefreshData()"></ion-refresher>
+        <ion-list class="newsListWrap">
+            <ion-item ng-repeat="item in newsList">
+                <a class="newsList" href="#/newsDetail/{{$index}}">
+                    <b>
+                        <img ng-src="{{item.imageurls[0].url}}" src="imgs/doge.jpg" alt="暂无图片&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"/>
+                    </b>
+                    <h2>
+                        {{item.title}}
+                        <i>{{item.pubDate}}</i>
+                    </h2>
+                </a>
+            </ion-item>
+        </ion-list>
+        <!--上拉刷新-->
+        <ion-infinite-scroll on-infinite="newsGetData()" immediate-check="true"></ion-infinite-scroll>
+    </ion-content>
+</ion-view>
+

@@ -1,0 +1,10 @@
+<ion-view view-title="{{city}}天气">
+    <ion-content class="has-header">
+        <ul class="card" ng-repeat="item in list track by $index">
+            <li><i class="icon ion-ios-calendar"><b></b></i><em>{{item.date}}&nbsp;{{dateMark[$index]}}</em></li>
+            <li><i class="icon ion-arrow-graph-up-left"></i><em>{{item.fengli}}&nbsp;{{item.fengxiang}}</em></li>
+            <li><i class="icon ion-thermometer"></i><em>{{item.high}}&nbsp;{{item.low}}</em></li>
+            <li id="weather-play"><i class="icon" ng-class="weatherClass[$index]"></i><em>{{item.type}}</em></li>
+        </ul>
+    </ion-content>
+</ion-view>

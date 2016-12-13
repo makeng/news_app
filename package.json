@@ -1,0 +1,32 @@
+{
+  "name": "news_and_weather_app",
+  "version": "1.0.0",
+  "description": "this is gulp",
+  "main": "index.js",
+  "dependencies": {
+    "del": "^2.2.2",
+    "gulp": "^3.9.1",
+    "gulp-concat": "^2.6.0",
+    "gulp-less": "^3.1.0",
+    "gulp-minify-css": "^1.2.4",
+    "gulp-rename": "^1.2.2",
+    "gulp-uglify": "^2.0.0",
+    "gulp-watch": "^4.3.10"
+  },
+  "devDependencies": {
+    "gulp-autoprefixer": "^3.1.1",
+    "gulp-px2rem-plugin": "^0.2.0"
+  },
+  "scripts": {
+    "test": "123"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://www.github.com"
+  },
+  "keywords": [
+    "1235"
+  ],
+  "author": "howelin",
+  "license": "ISC"
+}

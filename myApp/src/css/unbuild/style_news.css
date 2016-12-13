@@ -1,0 +1,90 @@
+/*新闻栏目*/
+.newsChoose{
+    position: absolute;
+    height: 2rem;
+    padding: 0;
+    margin: 0;
+}
+.newsChoose li{
+    box-sizing: border-box;
+    height: 2rem;
+    line-height: 2rem;
+    float: left;
+    width: 20%;
+    display: block;
+    background: skyblue;
+    color: white;
+    text-align: center;
+    border-left: 1px solid #fff;
+    border-bottom: 1px solid #fff;
+    position: relative;
+    font-size: .9rem
+}
+.newsChoose-sub{
+    position: absolute;
+    top: 100%;
+    width: 100%;
+    z-index: 6;
+    border: 1px solid #ccc;
+}
+.newsChoose-sub li{
+    width: 100%;
+    float: none;
+    border-left: 0;
+}
+.newsChooseSel{
+    background: #fff!important;
+    color: skyblue!important;
+}
+.has-header-my{
+    position: absolute;
+    top: 5rem;
+}
+.item{
+    background: rgba(255,255,255,.9)!important;
+}
+.newsList{
+    display: flex;
+    flex-flow: row wrap;
+    text-decoration: none;
+    color: #333;
+}
+.newsList b{
+    display: block;
+    float: left;
+    width: 20%;
+    height: 4rem;
+    box-shadow: 0 0 2px 2px skyblue;
+    overflow: hidden;
+    text-align: center;
+}
+.newsList b img{
+    height: 100%;
+    font-size: 1rem;
+    line-height: 4rem;
+    text-align: center;
+    text-decoration: none;
+    color: #ccc;
+    border: 0;
+}
+.newsList h2{
+    display: block;
+    float: left;
+    margin-left: 5%;
+    height: 4rem;
+    width: 75%;
+    overflow: hidden;
+    font-family: "微软雅黑";
+    white-space: normal;
+    position: relative;
+}
+.newsList h2 i{
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    color: #ccc;
+    font-size: .8rem;
+}
+.hideUl{
+    overflow: hidden;
+}
