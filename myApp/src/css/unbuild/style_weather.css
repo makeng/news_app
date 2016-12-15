@@ -78,14 +78,36 @@
     0%{ transform: scale(1) }
     100%{ transform: scale(1.5) }
 }
+/*---------------------------*/
 .card li:nth-child(2) i{
     background: deepskyblue;
     animation: goRound 10s linear infinite;
 }
 @keyframes goRound {
-    0%{ transform: rotate(0deg) }
-    100%{ transform: rotate(360deg) }
+    form{ transform: rotate(0deg) }
+    to{ transform: rotate(360deg) }
 }
+/*@keyframes myfirst
+{
+    from {background: red;}
+    to {background: yellow;}
+}
+@-moz-keyframes myfirst !* Firefox *!
+{
+    from {background: red;}
+    to {background: yellow;}
+}
+@-webkit-keyframes myfirst !* Safari 和 Chrome *!
+{
+    from {background: red;}
+    to {background: yellow;}
+}
+@-o-keyframes myfirst !* Opera *!
+{
+    from {background: red;}
+    to {background: yellow;}
+}*/
+/*----------------------------*/
 .card li:nth-child(3) i{
     background: red;
     animation: colorSw 5s infinite;
