@@ -32,8 +32,8 @@
         <div class="list selList">
             <div class="item selList-item" ng-repeat="item in list">
                 {{item}}
-                <i class="selList-item-i">
-                    <input type="radio" on-touch="selItem($index)" name="sel"/>
+                <i class="selList-item-i" on-touch="selItem($index)">
+                    <input type="radio" name="sel" ng-checked="selItemChecked[$index]"/> <!--选择勾选框-->
                 </i>
             </div>
         </div>

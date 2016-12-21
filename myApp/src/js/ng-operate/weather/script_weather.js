@@ -17,6 +17,7 @@
                         case "阴" : res = "ion-cloud"; break;
                         case "雾" : res = "ion-navicon"; break;
                         case "小雨" : res = "ion-waterdrop"; break;
+                        case "中雨" : res = "ion-waterdrop"; break;
                         case "大雨" : res = "ion-ios-rainy"; break;
                         case "雷阵雨" : res = "ion-ios-thunderstorm"; break;
                         case "冰雹" : res = "ion-record"; break;
@@ -54,7 +55,7 @@
                 //---接受来自设置的广播
                 this.receive = function(){
                     City.receive(function( data ){
-                        $scope.city = data;
+                        getWeather( data );
                         console.log( data );
                     });
                 }
@@ -64,14 +65,18 @@
             weather.receive();      //接受广播
             var city = weather.getCity();
             $scope.dateMark = [" (昨天)", " (今天)", " (明天)"];
-            $scope.weatherClass = [];  //天气图标
-            $scope.city = city;
             //获取天气信息，回调
-            weather.getWeatherData( city, function( list, nameList ){
-                $scope.list = list;
-                angular.forEach( nameList, function (item, index) {
-                    $scope.weatherClass.push( weather.getWeatherClassName(item) );  //转换成类名
+            function getWeather( city ){
+                $scope.city = city;
+                $scope.weatherClass = [];  //天气图标
+                weather.getWeatherData( city, function( list, nameList ){
+                    $scope.list = list;
+                    angular.forEach( nameList, function (item, index) {
+                        $scope.weatherClass.push( weather.getWeatherClassName(item) );  //转换成类名
+                    });
+                    console.log( $scope.weatherClass );
                 });
-            });
+            }
+            getWeather( city );
         }]);
 })();

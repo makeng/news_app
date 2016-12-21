@@ -6,7 +6,6 @@ html, body{
     font-family: "微软雅黑";
 }
 ion-view{
-    background: url(../../imgs/bg_1.jpeg) center center;
     background-size: cover;
 }
 /*-------------------------------------------------------------------------------------------------*/

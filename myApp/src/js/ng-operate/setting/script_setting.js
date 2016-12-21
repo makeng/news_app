@@ -13,34 +13,25 @@
                 this.cnt = 0;
                 this.unCheckedData = [];
                 this.checkedData = [];
-                this.selectedData = [];
                 var _this = this;
                 //获得所有数据
                 this.getData = function(){
                     this.data = NewsCh.get();
                 };
                 //获得未勾选的列表
-                this.getUncheckedData = function(){
+                this.getUn_checkedData = function(){
+                    this.cnt = 0;
                     var newArr = [];
+                    var newArr1 = [];
                     angular.forEach( newsCh.data, function(item, index){
-                        if( !item.chk ){
+                        if( !item.chk ){    //没有勾上的
                             newArr.push( item  );
+                        }else{              //勾上了的
+                            newArr1.push( item );
                         }
                     });
                     this.unCheckedData = newArr;
-                };
-                //获得已经勾选的列表
-                this.getCheckedData = function(){
-                    this.cnt = 0;
-                    var newArr = [];
-                    angular.forEach( newsCh.data, function(item, index){
-                        if ( item.chk == true ){
-                            _this.cnt ++;
-                            item.num = _this.cnt;
-                            newArr.push( item );
-                        }
-                    });
-                    this.checkedData = newArr;
+                    this.checkedData = newArr1;
                 };
             };
             //城市列表操作对象
@@ -64,13 +55,16 @@
             //---新闻
             var newsCh = new NewsChObj();
             newsCh.getData();
-            newsCh.getCheckedData();
+            newsCh.getUn_checkedData();
+            console.log( newsCh.data );
+            console.log( newsCh.unCheckedData );
+            console.log( newsCh.checkedData );
             $scope.NewsCh = newsCh.checkedData;
             //
             $scope.NewsChDel = function (idx) {  //点击方块删除对象
                 newsCh.checkedData[idx].chk = false;
-                newsCh.selectedData = newsCh.checkedData.splice( idx, 1 );  //取出
-                newsCh.unCheckedData.push( newsCh.selectedData[0] );
+                var temp = newsCh.checkedData.splice( idx, 1 );  //取出
+                newsCh.unCheckedData.push( temp[0] );
                 NewsCh.set( newsCh.checkedData.concat( newsCh.unCheckedData ) );
                 NewsCh.updateBroadcast();      //通知其他控制器
             };
@@ -78,7 +72,6 @@
                 $scope.showSelList = true;
                 $scope.aniSelList = false;
                 state_selList = 2;
-                newsCh.getUncheckedData();
                 var arr = [];   //收集名字
                 angular.forEach( newsCh.unCheckedData, function( item, data ){
                     arr.push( item.name );
@@ -92,6 +85,7 @@
             var cityCh = new CityChObj();
             cityCh.getData();
             $scope.city = cityCh.data;
+            $scope.selItemChecked = [];
             var state_selList = 0;   //用来区分选择状态
             //
             $scope.selCity = function () {  //选择城市按钮
@@ -111,6 +105,7 @@
                 $scope.aniSelList = true;
             };
             $scope.selItem = function (idx) {
+                $scope.selItemChecked[ idx ] = true;
                 $timeout(function () {    //为了看清radio的点，延时一点点
                     switch (state_selList) {
                         //城市
@@ -134,10 +129,11 @@
                             break;
                         //未显示的新闻列表
                         case 2 :
-                            var tempNewsCh = newsCh.unCheckedData.splice( idx, 1 );
+                            var tempNewsCh = newsCh.unCheckedData.splice( idx, 1 );     //点击的切出来
                             tempNewsCh[0].chk = true;
-                            newsCh.checkedData.push( tempNewsCh[0] );
+                            newsCh.checkedData.push( tempNewsCh[0] );       //压入勾选了的列表
                             NewsCh.set( newsCh.checkedData.concat( newsCh.unCheckedData) );
+                            console.log( newsCh.checkedData );
                             NewsCh.updateBroadcast();      //通知其他控制器
                             $scope.showSelList = false;
                             $scope.aniSelList = true;
@@ -145,6 +141,7 @@
                         default :
                             break;
                     }
+                    $scope.selItemChecked = [];     //清空checked按钮
                 }, 500);
             };
         }]);

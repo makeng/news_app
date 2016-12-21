@@ -14,16 +14,16 @@
                     this.data = val;
                 };
             }])
-        .service('NewsCh', ["$rootScope", "Cookie",
-            function ($rootScope, Cookie) {
+        .service('NewsCh', ["$rootScope", "Storage",
+            function ($rootScope, Storage) {
                 this.data = [];
                 var _data = this.data;
                 var _this = this;
                 this.isSet = false;
                 this.cnt = 0;
-                this.set = function ( obj ) {    //存入cookie
+                this.set = function ( obj ) {    //Storage取出
                     _data = obj;
-                    Cookie.set('NewsCh', JSON.stringify(_data), 30);
+                    Storage.set('NewsCh', JSON.stringify(_data));
                 };
                 //广播：数据已经改变
                 this.updateBroadcast = function () {
@@ -37,9 +37,9 @@
                         fn && fn();
                     });
                 };
-                //从cookie取出
+                //从Storage取出
                 this.get = function () {
-                    _data = Cookie.get('NewsCh');
+                    _data = Storage.get('NewsCh');
                     _data = JSON.parse(_data);
                     if (_data == [] || _data == undefined) { //default
                         _data = [
@@ -60,23 +60,6 @@
                             {name: "科技焦点", chk: false, num: 15}
                         ];
                     }
-                    return _data;
-                };
-                //根据num重新排列
-                this.regroup = function(){
-                    var newArr = [];
-                    for( var i = 1, flag = true; i <= _data.length; i ++ ){
-                        angular.forEach( _data, function( item, index ){
-                            if ( item.num == i ){
-                                newArr.push( item );
-                                flag = false;
-                            }
-                        });
-                    }
-                    for ( i = 0; i < _data.length; i ++ ){
-                        newArr[i].num = i + 1;
-                    }
-                    _data = newArr;
                     return _data;
                 };
             }]);

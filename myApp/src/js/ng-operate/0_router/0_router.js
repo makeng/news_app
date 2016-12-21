@@ -77,27 +77,15 @@
         // HTML版本，用于强制刷新HTML页面
         .constant('version', '1.0.0')
         /*-------------------------------------- 自定义服务 ------------------------------------------------*/
-        //cookie服务设置
-        .service('Cookie', [function () {
-            this.set = function (name, value, expiresDay) {
-                var date = new Date();
-                date.setDate(date.getDate() + expiresDay);
-                document.cookie = name + "=" + encodeURIComponent(value) + ";expires=" + date;
+        .service('Storage', [function () {
+            this.set = function (name, value) {
+                localStorage.setItem( name, value);
             };
             this.get = function (name) {
-                var cookieString = document.cookie.replace(/ /g, "");
-                var cookieArray = cookieString.split(";");
-                for (var i = 0; i < cookieArray.length; i++) {
-                    var array = cookieArray[i].split("=");
-                    if (array[0] == name) {
-                        return decodeURIComponent(array[1]);
-                    }
-                }
-                return null;
+                return localStorage.getItem( name );
             };
             this.remove = function (name) {
-                var date = new Date();
-                document.cookie = name + "=" + "" + ";expires=" + date;
+                localStorage.removeItem( name );
             };
         }])
 })();

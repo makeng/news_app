@@ -7,13 +7,13 @@
 }
 /*card bg*/
 .card:nth-child(1){
-    background: rgba(0,0,0,.6);
+    background: rgba(100,100,100,.5);
 }
 .card:nth-child(2){
-    background: #000;
+    background: rgba(0,0,0,.6);
 }
 .card:nth-child(n+3){
-    background: rgba(0,0,0,.6);
+    background: rgba(100,100,100,.5);
 }
 .card li{
     overflow: hidden;

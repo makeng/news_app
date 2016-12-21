@@ -77,27 +77,15 @@
         // HTML版本，用于强制刷新HTML页面
         .constant('version', '1.0.0')
         /*-------------------------------------- 自定义服务 ------------------------------------------------*/
-        //cookie服务设置
-        .service('Cookie', [function () {
-            this.set = function (name, value, expiresDay) {
-                var date = new Date();
-                date.setDate(date.getDate() + expiresDay);
-                document.cookie = name + "=" + encodeURIComponent(value) + ";expires=" + date;
+        .service('Storage', [function () {
+            this.set = function (name, value) {
+                localStorage.setItem( name, value);
             };
             this.get = function (name) {
-                var cookieString = document.cookie.replace(/ /g, "");
-                var cookieArray = cookieString.split(";");
-                for (var i = 0; i < cookieArray.length; i++) {
-                    var array = cookieArray[i].split("=");
-                    if (array[0] == name) {
-                        return decodeURIComponent(array[1]);
-                    }
-                }
-                return null;
+                return localStorage.getItem( name );
             };
             this.remove = function (name) {
-                var date = new Date();
-                document.cookie = name + "=" + "" + ";expires=" + date;
+                localStorage.removeItem( name );
             };
         }])
 })();
@@ -139,7 +127,7 @@
                             showapi_sign: apiSign,
                             //应用参数
                             needAllList: 0,    //不需要最全资料
-                            needHtml: 0, //需要html
+                            needHtml: 1, //需要html
                             maxResult: 20, //每次20条
                             channelName: channelName,
                             page: _this.page
@@ -260,16 +248,16 @@
                     this.data = val;
                 };
             }])
-        .service('NewsCh', ["$rootScope", "Cookie",
-            function ($rootScope, Cookie) {
+        .service('NewsCh', ["$rootScope", "Storage",
+            function ($rootScope, Storage) {
                 this.data = [];
                 var _data = this.data;
                 var _this = this;
                 this.isSet = false;
                 this.cnt = 0;
-                this.set = function ( obj ) {    //存入cookie
+                this.set = function ( obj ) {    //Storage取出
                     _data = obj;
-                    Cookie.set('NewsCh', JSON.stringify(_data), 30);
+                    Storage.set('NewsCh', JSON.stringify(_data));
                 };
                 //广播：数据已经改变
                 this.updateBroadcast = function () {
@@ -283,9 +271,9 @@
                         fn && fn();
                     });
                 };
-                //从cookie取出
+                //从Storage取出
                 this.get = function () {
-                    _data = Cookie.get('NewsCh');
+                    _data = Storage.get('NewsCh');
                     _data = JSON.parse(_data);
                     if (_data == [] || _data == undefined) { //default
                         _data = [
@@ -308,23 +296,6 @@
                     }
                     return _data;
                 };
-                //根据num重新排列
-                this.regroup = function(){
-                    var newArr = [];
-                    for( var i = 1, flag = true; i <= _data.length; i ++ ){
-                        angular.forEach( _data, function( item, index ){
-                            if ( item.num == i ){
-                                newArr.push( item );
-                                flag = false;
-                            }
-                        });
-                    }
-                    for ( i = 0; i < _data.length; i ++ ){
-                        newArr[i].num = i + 1;
-                    }
-                    _data = newArr;
-                    return _data;
-                };
             }]);
 })();
 /**
@@ -342,34 +313,25 @@
                 this.cnt = 0;
                 this.unCheckedData = [];
                 this.checkedData = [];
-                this.selectedData = [];
                 var _this = this;
                 //获得所有数据
                 this.getData = function(){
                     this.data = NewsCh.get();
                 };
                 //获得未勾选的列表
-                this.getUncheckedData = function(){
+                this.getUn_checkedData = function(){
+                    this.cnt = 0;
                     var newArr = [];
+                    var newArr1 = [];
                     angular.forEach( newsCh.data, function(item, index){
-                        if( !item.chk ){
+                        if( !item.chk ){    //没有勾上的
                             newArr.push( item  );
+                        }else{              //勾上了的
+                            newArr1.push( item );
                         }
                     });
                     this.unCheckedData = newArr;
-                };
-                //获得已经勾选的列表
-                this.getCheckedData = function(){
-                    this.cnt = 0;
-                    var newArr = [];
-                    angular.forEach( newsCh.data, function(item, index){
-                        if ( item.chk == true ){
-                            _this.cnt ++;
-                            item.num = _this.cnt;
-                            newArr.push( item );
-                        }
-                    });
-                    this.checkedData = newArr;
+                    this.checkedData = newArr1;
                 };
             };
             //城市列表操作对象
@@ -393,13 +355,16 @@
             //---新闻
             var newsCh = new NewsChObj();
             newsCh.getData();
-            newsCh.getCheckedData();
+            newsCh.getUn_checkedData();
+            console.log( newsCh.data );
+            console.log( newsCh.unCheckedData );
+            console.log( newsCh.checkedData );
             $scope.NewsCh = newsCh.checkedData;
             //
             $scope.NewsChDel = function (idx) {  //点击方块删除对象
                 newsCh.checkedData[idx].chk = false;
-                newsCh.selectedData = newsCh.checkedData.splice( idx, 1 );  //取出
-                newsCh.unCheckedData.push( newsCh.selectedData[0] );
+                var temp = newsCh.checkedData.splice( idx, 1 );  //取出
+                newsCh.unCheckedData.push( temp[0] );
                 NewsCh.set( newsCh.checkedData.concat( newsCh.unCheckedData ) );
                 NewsCh.updateBroadcast();      //通知其他控制器
             };
@@ -407,7 +372,6 @@
                 $scope.showSelList = true;
                 $scope.aniSelList = false;
                 state_selList = 2;
-                newsCh.getUncheckedData();
                 var arr = [];   //收集名字
                 angular.forEach( newsCh.unCheckedData, function( item, data ){
                     arr.push( item.name );
@@ -421,6 +385,7 @@
             var cityCh = new CityChObj();
             cityCh.getData();
             $scope.city = cityCh.data;
+            $scope.selItemChecked = [];
             var state_selList = 0;   //用来区分选择状态
             //
             $scope.selCity = function () {  //选择城市按钮
@@ -440,6 +405,7 @@
                 $scope.aniSelList = true;
             };
             $scope.selItem = function (idx) {
+                $scope.selItemChecked[ idx ] = true;
                 $timeout(function () {    //为了看清radio的点，延时一点点
                     switch (state_selList) {
                         //城市
@@ -463,10 +429,11 @@
                             break;
                         //未显示的新闻列表
                         case 2 :
-                            var tempNewsCh = newsCh.unCheckedData.splice( idx, 1 );
+                            var tempNewsCh = newsCh.unCheckedData.splice( idx, 1 );     //点击的切出来
                             tempNewsCh[0].chk = true;
-                            newsCh.checkedData.push( tempNewsCh[0] );
+                            newsCh.checkedData.push( tempNewsCh[0] );       //压入勾选了的列表
                             NewsCh.set( newsCh.checkedData.concat( newsCh.unCheckedData) );
+                            console.log( newsCh.checkedData );
                             NewsCh.updateBroadcast();      //通知其他控制器
                             $scope.showSelList = false;
                             $scope.aniSelList = true;
@@ -474,6 +441,7 @@
                         default :
                             break;
                     }
+                    $scope.selItemChecked = [];     //清空checked按钮
                 }, 500);
             };
         }]);
@@ -497,6 +465,7 @@
                         case "阴" : res = "ion-cloud"; break;
                         case "雾" : res = "ion-navicon"; break;
                         case "小雨" : res = "ion-waterdrop"; break;
+                        case "中雨" : res = "ion-waterdrop"; break;
                         case "大雨" : res = "ion-ios-rainy"; break;
                         case "雷阵雨" : res = "ion-ios-thunderstorm"; break;
                         case "冰雹" : res = "ion-record"; break;
@@ -534,7 +503,7 @@
                 //---接受来自设置的广播
                 this.receive = function(){
                     City.receive(function( data ){
-                        $scope.city = data;
+                        getWeather( data );
                         console.log( data );
                     });
                 }
@@ -544,15 +513,19 @@
             weather.receive();      //接受广播
             var city = weather.getCity();
             $scope.dateMark = [" (昨天)", " (今天)", " (明天)"];
-            $scope.weatherClass = [];  //天气图标
-            $scope.city = city;
             //获取天气信息，回调
-            weather.getWeatherData( city, function( list, nameList ){
-                $scope.list = list;
-                angular.forEach( nameList, function (item, index) {
-                    $scope.weatherClass.push( weather.getWeatherClassName(item) );  //转换成类名
+            function getWeather( city ){
+                $scope.city = city;
+                $scope.weatherClass = [];  //天气图标
+                weather.getWeatherData( city, function( list, nameList ){
+                    $scope.list = list;
+                    angular.forEach( nameList, function (item, index) {
+                        $scope.weatherClass.push( weather.getWeatherClassName(item) );  //转换成类名
+                    });
+                    console.log( $scope.weatherClass );
                 });
-            });
+            }
+            getWeather( city );
         }]);
 })();
 /**
@@ -561,19 +534,19 @@
 //新闻栏目顺序
 (function () {
     angular.module('citySer', [])        //城市选择
-        .service('City', ["Cookie", "$rootScope", function (Cookie, $rootScope) {
+        .service('City', ["Storage", "$rootScope", function (Storage, $rootScope) {
             //---数据
             this.data = "";
             this.isSet = false;
             var _this = this;
-            //---存入cookie
+            //---存入Storage
             this.set = function (val) {
                 _this.data = val;
-                Cookie.set('City', _this.data, 30);
+                Storage.set('City', _this.data );
             };
             //---取出
             this.get = function () {
-                _this.data = Cookie.get('City');
+                _this.data = Storage.get('City');
                 if (_this.data == "" || _this.data == undefined) {   //default
                     _this.data = "深圳";
                 }

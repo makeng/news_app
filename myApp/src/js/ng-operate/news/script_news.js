@@ -36,7 +36,7 @@
                             showapi_sign: apiSign,
                             //应用参数
                             needAllList: 0,    //不需要最全资料
-                            needHtml: 0, //需要html
+                            needHtml: 1, //需要html
                             maxResult: 20, //每次20条
                             channelName: channelName,
                             page: _this.page
