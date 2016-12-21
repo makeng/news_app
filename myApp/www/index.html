@@ -27,28 +27,30 @@
 </head>
 <body ng-controller="indexCon">
 <!------------------------------------------主页只负责路由-------------------------------------------->
-<!--标题-->
-<ion-nav-bar class="bar-positive header">
-    <!--回退按钮-->
-    <ion-nav-back-button>
-        <i class="ion-ios-arrow-back"></i>
-    </ion-nav-back-button>
-</ion-nav-bar>
-<!--中间和底部-->
-<ion-tabs class="tabs-positive tabs-icon-top abs_bottom">
-    <!--新闻页-->
-    <ion-tab title="新闻" icon-on="ion-ios-paper" icon-off="ion-ios-paper-outline" ui-sref="tab1">
-        <ion-nav-view name="view1"></ion-nav-view>
-    </ion-tab>
-    <!--天气页-->
-    <ion-tab title="天气" icon-on="ion-ios-partlysunny" icon-off="ion-ios-partlysunny-outline" ui-sref="tab2">
-        <ion-nav-view name="view2"></ion-nav-view>
-    </ion-tab>
-    <!--设置页-->
-    <ion-tab title="设置" icon-on="ion-ios-cog" icon-off="ion-ios-cog-outline" ui-sref="tab3">
-        <ion-nav-view name="view3"></ion-nav-view>
-    </ion-tab>
-</ion-tabs>
+<div class="wrap">
+    <!--标题-->
+    <ion-nav-bar class="bar-positive header">
+        <!--回退按钮-->
+        <ion-nav-back-button>
+            <i class="ion-ios-arrow-back"></i>
+        </ion-nav-back-button>
+    </ion-nav-bar>
+    <!--中间和底部-->
+    <ion-tabs class="tabs-positive tabs-icon-top abs_bottom">
+        <!--新闻页-->
+        <ion-tab title="新闻" icon-on="ion-ios-paper" icon-off="ion-ios-paper-outline" ui-sref="tab1">
+            <ion-nav-view name="view1"></ion-nav-view>
+        </ion-tab>
+        <!--天气页-->
+        <ion-tab title="天气" icon-on="ion-ios-partlysunny" icon-off="ion-ios-partlysunny-outline" ui-sref="tab2">
+            <ion-nav-view name="view2"></ion-nav-view>
+        </ion-tab>
+        <!--设置页-->
+        <ion-tab title="设置" icon-on="ion-ios-cog" icon-off="ion-ios-cog-outline" ui-sref="tab3">
+            <ion-nav-view name="view3"></ion-nav-view>
+        </ion-tab>
+    </ion-tabs>
+</div>
 <!------------------------------------------脚本------------------------------------------------------>
 <!-- Ionic's root component and where the app will load -->
 <ion-app></ion-app>

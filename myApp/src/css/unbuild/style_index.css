@@ -1,12 +1,6 @@
 html, body{
-    max-width: 750px;
-    min-width: 300px;
-    margin: 0 auto;
     font-size: 14px;
     font-family: "微软雅黑";
-}
-ion-view{
-    background-size: cover;
 }
 /*-------------------------------------------------------------------------------------------------*/
 .header{ padding: 0; color: white }

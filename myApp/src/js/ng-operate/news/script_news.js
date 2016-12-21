@@ -42,7 +42,6 @@
                             page: _this.page
                         }
                     }).success(function (res) {
-                        console.log(res);
                         var news = res.showapi_res_body.pagebean.contentlist;
                         (_this.data == []) ? (_this.data = news) : (_this.data = _this.data.concat(news));
                         fn && fn(_this.data);
@@ -70,7 +69,6 @@
                         }
                     });
                     fn && fn(_this.cnt, _this.data);
-                    console.log(this.data);
                 }
             };
             //---执行---------------------------------------------------------------------------------------------------

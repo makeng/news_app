@@ -90,215 +90,6 @@
         }])
 })();
 /**
- * Created by Ken on 2016/12/2.
- */
-(function () {
-    angular.module('news', [])
-        .controller('newsCtrl', [
-        "$rootScope", "$scope", "$http", "$timeout", "NewsCh", "NewsDetail",
-        function ($rootScope, $scope, $http, $timeout, NewsCh, NewsDetail) {
-            //---构建新闻对象
-            var NewsObj = function () {
-                //---页码
-                this.page = 1;
-                this.data = [];
-                var _this = this;
-                //---获取新闻，需要当前时间
-                this.getData = function (channelName, fn) {
-                    var url = "http://route.showapi.com/109-35";
-                    var apiSign = "55f74716416141b1ac2d81797a321538";
-                    var time = function () {
-                        var time = new Date();
-                        return (
-                            time.getFullYear() + "" +
-                            (time.getMonth() + 1) + "" +
-                            ( (time.getDate() < 10) ? ("0" + time.getDate()) : (time.getDate())) + "" +
-                            ( (time.getHours() < 10) ? ("0" + time.getHours()) : (time.getHours())) + "" +
-                            ( (time.getMinutes() < 10) ? ("0" + time.getMinutes()) : (time.getMinutes())) + "" +
-                            ( (time.getSeconds() < 10) ? ("0" + time.getSeconds()) : (time.getSeconds()))
-                        );
-                    }();    //获取时间
-                    //
-                    $http.get(url, {
-                        params: {
-                            //系统参数
-                            showapi_appid: "28034",
-                            showapi_timestamp: time,
-                            showapi_sign: apiSign,
-                            //应用参数
-                            needAllList: 0,    //不需要最全资料
-                            needHtml: 1, //需要html
-                            maxResult: 20, //每次20条
-                            channelName: channelName,
-                            page: _this.page
-                        }
-                    }).success(function (res) {
-                        console.log(res);
-                        var news = res.showapi_res_body.pagebean.contentlist;
-                        (_this.data == []) ? (_this.data = news) : (_this.data = _this.data.concat(news));
-                        fn && fn(_this.data);
-                        NewsDetail.setData(_this.data);
-                    });
-                };
-                this.clearData = function () {
-                    this.data = [];
-                };
-            };
-            //---构建新闻栏目对象
-            var newsChObj = function () {
-                this.data = [];
-                this.cnt = 0;
-                var _this = this;
-                //获取数据
-                this.getData = function (fn) {
-                    var tempChs = NewsCh.get();
-                    _this.data = [];
-                    _this.cnt = 0;
-                    angular.forEach(tempChs, function (item, index) {    //勾选的才加入
-                        if (item.chk == true) {
-                            _this.data.push(item);
-                            _this.cnt++;
-                        }
-                    });
-                    fn && fn(_this.cnt, _this.data);
-                    console.log(this.data);
-                }
-            };
-            //---执行---------------------------------------------------------------------------------------------------
-            var news = new NewsObj();
-            var ch = new newsChObj();
-            $scope.hideMoreNews = true;
-            $scope.selected = [true, false, false, false, false];
-            //
-            function loadNewsCh() {
-                ch.getData(function (cnt, data) {
-                    $scope.channel = data[0]; //顶部标题
-                    $scope.newsChannelArrFront4 = data.slice(0, 4);   //前四栏目
-                    $scope.newsChannelArrAfter4 = data.slice(4);  //后面栏目
-                    ( cnt >= 5 ) ? $scope.isMoreCh = true : $scope.isMoreCh = false;
-                });
-            }
-
-            loadNewsCh();
-            //---数据通知
-            NewsCh.receiveUpdateBroadcast(function () {
-                loadNewsCh();
-            });
-            //---下拉刷新数据
-            $scope.newsRefreshData = function () {
-                news.page = 1;   //回到第一页
-                news.clearData();  //清空新闻存储
-                news.getData($scope.channel.name, function (data) {
-                    $scope.newsList = data;
-                });
-                $scope.$broadcast("scroll.refreshComplete"); // 通知框架数据已加载完毕
-            };
-            //---上拉滚动加载，500ms显示菊花图
-            $scope.newsGetData = function () {
-                $timeout(function () {
-                    news.getData($scope.channel.name, function (data) {
-                        $scope.newsList = data;
-                    });
-                    news.page++;
-                    $scope.$broadcast("scroll.infiniteScrollComplete"); // 通知框架数据已加载完毕
-                }, 500);
-            };
-            //---点击新闻栏目，切换颜色
-            $scope.selTab = function (idx) {
-                $scope.channel = ch.data[idx]; //更换标题
-                news.clearData();  //清空新闻存储
-                $scope.newsList = [];   //清空列表
-                news.getData($scope.channel.name, function (data) {
-                    $scope.newsList = data;
-                });
-                $scope.$broadcast("scroll.infiniteScrollComplete"); // 通知框架数据已加载完毕
-                $scope.selected = [];
-                $scope.selected[idx] = true;
-                if (idx < 4) {
-                    $scope.hideMoreNews = true;    //点击前几个栏目要把“更多”隐藏
-                }
-            };
-            $scope.showMoreNewsTitle = function () {
-                $scope.hideMoreNews = !$scope.hideMoreNews;
-            };
-        }]);
-})();
-
-(function () {
-    angular.module('newsDetail', [])
-        .controller('newsDetailCtrl', [
-            "$scope", "$stateParams", "NewsDetail",
-            function ($scope, $stateParams, NewsDetail) {
-                $scope.txt = NewsDetail.getData()[$stateParams.id];
-            }]);
-})();
-/**
- * Created by kolly on 2016/5/11.
- */
-//新闻栏目顺序
-(function () {
-    angular.module('newsDetailSer', [])
-        .service('NewsDetail', [
-            function () {
-                this.data = [];
-                this.getData = function(){
-                    return this.data;
-                };
-                this.setData = function( val ){
-                    this.data = val;
-                };
-            }])
-        .service('NewsCh', ["$rootScope", "Storage",
-            function ($rootScope, Storage) {
-                this.data = [];
-                var _data = this.data;
-                var _this = this;
-                this.isSet = false;
-                this.cnt = 0;
-                this.set = function ( obj ) {    //Storage取出
-                    _data = obj;
-                    Storage.set('NewsCh', JSON.stringify(_data));
-                };
-                //广播：数据已经改变
-                this.updateBroadcast = function () {
-                    _this.isSet = true;
-                    $rootScope.$broadcast('to-news', _this.isSet);
-                };
-                //接受广播
-                this.receiveUpdateBroadcast = function(fn){
-                    _this.isSet = false;
-                    $rootScope.$on('to-news', function(event, data ){   //栏目改变，重新加载
-                        fn && fn();
-                    });
-                };
-                //从Storage取出
-                this.get = function () {
-                    _data = Storage.get('NewsCh');
-                    _data = JSON.parse(_data);
-                    if (_data == [] || _data == undefined) { //default
-                        _data = [
-                            {name: "国内最新", chk: true, num:1 },
-                            {name: "国际最新", chk: true, num:2 },
-                            {name: "国内焦点", chk: true, num:3 },
-                            {name: "国际焦点", chk: true, num:4 },
-                            {name: "社会最新", chk: true, num:5 },
-                            {name: "社会焦点", chk: true, num:6 },
-                            {name: "军事最新", chk: true, num:7 },
-                            {name: "军事焦点", chk: true, num:8 },
-                            {name: "互联网最新", chk: false, num:9 },
-                            {name: "体育最新", chk: false, num: 10},
-                            {name: "体育焦点", chk: false, num: 11},
-                            {name: "娱乐最新", chk: false, num: 12},
-                            {name: "娱乐焦点", chk: false, num: 13},
-                            {name: "科技最新", chk: false, num: 14},
-                            {name: "科技焦点", chk: false, num: 15}
-                        ];
-                    }
-                    return _data;
-                };
-            }]);
-})();
-/**
  * Created by Ken on 2015/12/2.
  */
 (function () {
@@ -445,6 +236,213 @@
                 }, 500);
             };
         }]);
+})();
+/**
+ * Created by Ken on 2016/12/2.
+ */
+(function () {
+    angular.module('news', [])
+        .controller('newsCtrl', [
+        "$rootScope", "$scope", "$http", "$timeout", "NewsCh", "NewsDetail",
+        function ($rootScope, $scope, $http, $timeout, NewsCh, NewsDetail) {
+            //---构建新闻对象
+            var NewsObj = function () {
+                //---页码
+                this.page = 1;
+                this.data = [];
+                var _this = this;
+                //---获取新闻，需要当前时间
+                this.getData = function (channelName, fn) {
+                    var url = "http://route.showapi.com/109-35";
+                    var apiSign = "55f74716416141b1ac2d81797a321538";
+                    var time = function () {
+                        var time = new Date();
+                        return (
+                            time.getFullYear() + "" +
+                            (time.getMonth() + 1) + "" +
+                            ( (time.getDate() < 10) ? ("0" + time.getDate()) : (time.getDate())) + "" +
+                            ( (time.getHours() < 10) ? ("0" + time.getHours()) : (time.getHours())) + "" +
+                            ( (time.getMinutes() < 10) ? ("0" + time.getMinutes()) : (time.getMinutes())) + "" +
+                            ( (time.getSeconds() < 10) ? ("0" + time.getSeconds()) : (time.getSeconds()))
+                        );
+                    }();    //获取时间
+                    //
+                    $http.get(url, {
+                        params: {
+                            //系统参数
+                            showapi_appid: "28034",
+                            showapi_timestamp: time,
+                            showapi_sign: apiSign,
+                            //应用参数
+                            needAllList: 0,    //不需要最全资料
+                            needHtml: 1, //需要html
+                            maxResult: 20, //每次20条
+                            channelName: channelName,
+                            page: _this.page
+                        }
+                    }).success(function (res) {
+                        var news = res.showapi_res_body.pagebean.contentlist;
+                        (_this.data == []) ? (_this.data = news) : (_this.data = _this.data.concat(news));
+                        fn && fn(_this.data);
+                        NewsDetail.setData(_this.data);
+                    });
+                };
+                this.clearData = function () {
+                    this.data = [];
+                };
+            };
+            //---构建新闻栏目对象
+            var newsChObj = function () {
+                this.data = [];
+                this.cnt = 0;
+                var _this = this;
+                //获取数据
+                this.getData = function (fn) {
+                    var tempChs = NewsCh.get();
+                    _this.data = [];
+                    _this.cnt = 0;
+                    angular.forEach(tempChs, function (item, index) {    //勾选的才加入
+                        if (item.chk == true) {
+                            _this.data.push(item);
+                            _this.cnt++;
+                        }
+                    });
+                    fn && fn(_this.cnt, _this.data);
+                }
+            };
+            //---执行---------------------------------------------------------------------------------------------------
+            var news = new NewsObj();
+            var ch = new newsChObj();
+            $scope.hideMoreNews = true;
+            $scope.selected = [true, false, false, false, false];
+            //
+            function loadNewsCh() {
+                ch.getData(function (cnt, data) {
+                    $scope.channel = data[0]; //顶部标题
+                    $scope.newsChannelArrFront4 = data.slice(0, 4);   //前四栏目
+                    $scope.newsChannelArrAfter4 = data.slice(4);  //后面栏目
+                    ( cnt >= 5 ) ? $scope.isMoreCh = true : $scope.isMoreCh = false;
+                });
+            }
+
+            loadNewsCh();
+            //---数据通知
+            NewsCh.receiveUpdateBroadcast(function () {
+                loadNewsCh();
+            });
+            //---下拉刷新数据
+            $scope.newsRefreshData = function () {
+                news.page = 1;   //回到第一页
+                news.clearData();  //清空新闻存储
+                news.getData($scope.channel.name, function (data) {
+                    $scope.newsList = data;
+                });
+                $scope.$broadcast("scroll.refreshComplete"); // 通知框架数据已加载完毕
+            };
+            //---上拉滚动加载，500ms显示菊花图
+            $scope.newsGetData = function () {
+                $timeout(function () {
+                    news.getData($scope.channel.name, function (data) {
+                        $scope.newsList = data;
+                    });
+                    news.page++;
+                    $scope.$broadcast("scroll.infiniteScrollComplete"); // 通知框架数据已加载完毕
+                }, 500);
+            };
+            //---点击新闻栏目，切换颜色
+            $scope.selTab = function (idx) {
+                $scope.channel = ch.data[idx]; //更换标题
+                news.clearData();  //清空新闻存储
+                $scope.newsList = [];   //清空列表
+                news.getData($scope.channel.name, function (data) {
+                    $scope.newsList = data;
+                });
+                $scope.$broadcast("scroll.infiniteScrollComplete"); // 通知框架数据已加载完毕
+                $scope.selected = [];
+                $scope.selected[idx] = true;
+                if (idx < 4) {
+                    $scope.hideMoreNews = true;    //点击前几个栏目要把“更多”隐藏
+                }
+            };
+            $scope.showMoreNewsTitle = function () {
+                $scope.hideMoreNews = !$scope.hideMoreNews;
+            };
+        }]);
+})();
+
+(function () {
+    angular.module('newsDetail', [])
+        .controller('newsDetailCtrl', [
+            "$scope", "$stateParams", "NewsDetail",
+            function ($scope, $stateParams, NewsDetail) {
+                $scope.txt = NewsDetail.getData()[$stateParams.id];
+            }]);
+})();
+/**
+ * Created by kolly on 2016/5/11.
+ */
+//新闻栏目顺序
+(function () {
+    angular.module('newsDetailSer', [])
+        .service('NewsDetail', [
+            function () {
+                this.data = [];
+                this.getData = function(){
+                    return this.data;
+                };
+                this.setData = function( val ){
+                    this.data = val;
+                };
+            }])
+        .service('NewsCh', ["$rootScope", "Storage",
+            function ($rootScope, Storage) {
+                this.data = [];
+                var _data = this.data;
+                var _this = this;
+                this.isSet = false;
+                this.cnt = 0;
+                this.set = function ( obj ) {    //Storage取出
+                    _data = obj;
+                    Storage.set('NewsCh', JSON.stringify(_data));
+                };
+                //广播：数据已经改变
+                this.updateBroadcast = function () {
+                    _this.isSet = true;
+                    $rootScope.$broadcast('to-news', _this.isSet);
+                };
+                //接受广播
+                this.receiveUpdateBroadcast = function(fn){
+                    _this.isSet = false;
+                    $rootScope.$on('to-news', function(event, data ){   //栏目改变，重新加载
+                        fn && fn();
+                    });
+                };
+                //从Storage取出
+                this.get = function () {
+                    _data = Storage.get('NewsCh');
+                    _data = JSON.parse(_data);
+                    if (_data == [] || _data == undefined) { //default
+                        _data = [
+                            {name: "国内最新", chk: true, num:1 },
+                            {name: "国际最新", chk: true, num:2 },
+                            {name: "国内焦点", chk: true, num:3 },
+                            {name: "国际焦点", chk: true, num:4 },
+                            {name: "社会最新", chk: true, num:5 },
+                            {name: "社会焦点", chk: true, num:6 },
+                            {name: "军事最新", chk: true, num:7 },
+                            {name: "军事焦点", chk: true, num:8 },
+                            {name: "互联网最新", chk: false, num:9 },
+                            {name: "体育最新", chk: false, num: 10},
+                            {name: "体育焦点", chk: false, num: 11},
+                            {name: "娱乐最新", chk: false, num: 12},
+                            {name: "娱乐焦点", chk: false, num: 13},
+                            {name: "科技最新", chk: false, num: 14},
+                            {name: "科技焦点", chk: false, num: 15}
+                        ];
+                    }
+                    return _data;
+                };
+            }]);
 })();
 /**
  * Created by Ken on 2015/12/2.
