@@ -16,23 +16,11 @@
                 this.getData = function (channelName, fn) {
                     var url = "http://route.showapi.com/109-35";
                     var apiSign = "55f74716416141b1ac2d81797a321538";
-                    var time = function () {
-                        var time = new Date();
-                        return (
-                            time.getFullYear() + "" +
-                            (time.getMonth() + 1) + "" +
-                            ( (time.getDate() < 10) ? ("0" + time.getDate()) : (time.getDate())) + "" +
-                            ( (time.getHours() < 10) ? ("0" + time.getHours()) : (time.getHours())) + "" +
-                            ( (time.getMinutes() < 10) ? ("0" + time.getMinutes()) : (time.getMinutes())) + "" +
-                            ( (time.getSeconds() < 10) ? ("0" + time.getSeconds()) : (time.getSeconds()))
-                        );
-                    }();    //获取时间
                     //
                     $http.get(url, {
                         params: {
                             //系统参数
                             showapi_appid: "28034",
-                            showapi_timestamp: time,
                             showapi_sign: apiSign,
                             //应用参数
                             needAllList: 0,    //不需要最全资料
@@ -42,6 +30,7 @@
                             page: _this.page
                         }
                     }).success(function (res) {
+                        console.log( res );
                         var news = res.showapi_res_body.pagebean.contentlist;
                         (_this.data == []) ? (_this.data = news) : (_this.data = _this.data.concat(news));
                         fn && fn(_this.data);
